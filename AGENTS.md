@@ -1,0 +1,63 @@
+# AGENTS.md
+
+Guidance for AI coding agents working in **aember-monitor**.
+
+## What this repo is
+
+A full-screen status display for aember devices, packed as an LXC
+container. It only displays: the data comes from the sibling
+`../aember-stats` (JSON lines on `/run/aember-stats/stats.sock`). Siblings:
+`../aember` (the C++23 init system that runs both containers),
+`../aember-resources` (kernel, LXC, the SDKs; Qt is in the SDKs since
+v0.1.13), `../aember-build-helper` (packs containers; a submodule here).
+
+## Layout
+
+```
+include/aember-monitor/model.h           Sample: the JSON line, parsed leniently
+include/aember-monitor/dashboard.h       Paint(): one frame, pure (QPainter)
+include/aember-monitor/monitor-window.h  QRasterWindow + QLocalSocket client
+src/main.cpp                             platform (linuxfb/offscreen), font dir, flags
+tests/test_monitor.cpp                   Qt Test: parser, drawing, socket client
+assets/fonts/                            DejaVu Sans (the only font) + its license
+aember-container.json                    container manifest (aember-build-helper)
+aember-cli/                              `aember` CLI: sdk, build, pack, install, test, all
+```
+
+## Rules
+
+- **Qt stays minimal**: Core, Gui and Network from the SDK's qtbase (built
+  with `gui linuxfb no-opengl png zlib`). No widgets, QML, OpenGL, fontconfig
+  or input; nothing outside qtbase. A feature that needs more is a change to
+  aember-resources' `kas/recipes/sdk.yml` first.
+- **No moc in the app**: connections use lambdas, no `Q_OBJECT` outside the
+  tests (the test class needs it; AUTOMOC is on only there).
+- `Paint()` is pure (sample + size → pixels) and scales with the frame
+  height; tests render it into QImages at 320x240, 800x480 and 1920x1080.
+  Keep drawing out of the window class.
+- The JSON format is aember-stats' (`version` 1). Parse leniently (missing
+  fields keep defaults), reject other versions, never crash on bad input.
+  Format changes go into both repos together.
+- The socket directory comes from the LXC pre-start hook + bind mount in
+  `aember-container.json`, the same as aember-stats' (read-only here).
+- The CLI is shared with aember-stats (stdlib Python, run through
+  `aember-cli/run.py`, never pip-installed); `aember/project.py` holds the
+  differences (`NAME`, `TESTS = "sdk"`).
+- WSL crashes on full-core builds: the CLI uses 2/3 of the CPUs.
+
+## Builds and tests
+
+- Cross builds source the SDK's environment-setup and use its
+  `OEToolchainConfig.cmake` (meta-qt6 adds Qt's host tools there).
+- `aember-cli/run.py test`: CLI tests, then the Qt tests built with the x64
+  SDK and run through the SDK's loader (`QT_QPA_PLATFORM=offscreen`, the
+  sysroot's plugins).
+- Before calling a change done: `run.py test`, a cross build + pack, and the
+  container in aember with aember-stats (QEMU boot; `--screenshot` shows the
+  frame).
+- C++23, `-Werror`, clang-format; Python black, 88 columns.
+
+## Working agreements
+
+- Branch off `main`, merge through a PR; commit, push and merge only when
+  asked. The GitHub repository is created by the user.

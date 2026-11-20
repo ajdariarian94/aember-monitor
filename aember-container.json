@@ -1,0 +1,25 @@
+{
+  "name": "aember-monitor",
+  "command": [
+    "/usr/bin/aember-monitor"
+  ],
+  "env": {
+    "QT_PLUGIN_PATH": "/usr/lib/plugins",
+    "LC_ALL": "C.UTF-8"
+  },
+  "network": "isolated",
+  "devices": [
+    "/dev/fb0"
+  ],
+  "restart_policy": "always",
+  "max_restart_attempts": 0,
+  "restart_delay": 2,
+  "stop_timeout": 5,
+  "console_log": true,
+  "compression": "xz",
+  "lxc": [
+    "# aember-stats' socket: /run/aember-stats on the host, read-only here (same hook as aember-stats: whichever starts first creates it)",
+    "lxc.hook.pre-start = /bin/sh -c \"mkdir -p /run/aember-stats\"",
+    "lxc.mount.entry = /run/aember-stats run/aember-stats none bind,ro,create=dir 0 0"
+  ]
+}

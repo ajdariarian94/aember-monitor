@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Unit tests (x64 SDK with Qt, CLI)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: SDK version
+        id: sdk
+        run: echo "version=$(sed -n 's/^RESOURCES_VERSION = "\(.*\)"/\1/p' aember-cli/aember/project.py)" >> "$GITHUB_OUTPUT"
+      # The x64 aember-resources SDK (~650 MB installer, ~4 GB installed):
+      # cached per release version.
+      - uses: actions/cache@v4
+        with:
+          path: build/aember-resources/x64-poky-linux/sdk
+          key: aember-sdk-x64-poky-linux-v${{ steps.sdk.outputs.version }}
+      - name: SDK
+        run: python3 aember-cli/run.py sdk -a x64-poky-linux
+      - name: Tests
+        run: python3 aember-cli/run.py test
