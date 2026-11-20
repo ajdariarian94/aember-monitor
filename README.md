@@ -34,6 +34,8 @@ minimal Qt 6 (Core, Gui, Network; raster painting, no OpenGL, no widgets).
   device has one). Without a framebuffer it draws offscreen, which is how the
   QEMU tests and `--screenshot` work. `QT_QPA_PLATFORM` overrides both.
 - One font (DejaVu Sans) ships in the container; there is no fontconfig.
+  glibc targets also get the sysroot's locale archive for `C.UTF-8`
+  (Qt wants a UTF-8 locale; musl has it built in).
 
 ```
 aember-monitor [--socket PATH] [--screenshot FILE.png [--quit]]

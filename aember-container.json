@@ -21,5 +21,13 @@
     "# aember-stats' socket: /run/aember-stats on the host, read-only here (same hook as aember-stats: whichever starts first creates it)",
     "lxc.hook.pre-start = /bin/sh -c \"mkdir -p /run/aember-stats\"",
     "lxc.mount.entry = /run/aember-stats run/aember-stats none bind,ro,create=dir 0 0"
+  ],
+  "files": [
+    {
+      "src": "{sysroot}/usr/lib/locale/locale-archive",
+      "dst": "/usr/lib/locale/locale-archive",
+      "mode": "0644",
+      "optional": true
+    }
   ]
 }
