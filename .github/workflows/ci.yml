@@ -17,7 +17,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ninja-build
       - name: SDK version
         id: sdk
-        run: echo "version=$(sed -n 's/^RESOURCES_VERSION = "\(.*\)"/\1/p' aember-cli/aember/project.py)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(sed -n 's/^RESOURCES_VERSION = "\(.*\)"/\1/p' aember-cli/run.py)" >> "$GITHUB_OUTPUT"
       # The x64 aember-resources SDK (~650 MB installer, ~4 GB installed):
       # cached per release version.
       - uses: actions/cache@v4

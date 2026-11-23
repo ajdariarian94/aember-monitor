@@ -21,7 +21,8 @@ src/main.cpp                             platform (linuxfb/offscreen), font dir,
 tests/test_monitor.cpp                   Qt Test: parser, drawing, socket client
 assets/fonts/                            DejaVu Sans (the only font) + its license
 aember-container.json                    container manifest (aember-build-helper)
-aember-cli/                              `aember` CLI: sdk, build, pack, install, test, all
+aember-cli/run.py                        `aember` CLI: sdk, build, pack, install, test, all
+                                         (aember-build-helper's project-cli/, told NAME etc.)
 ```
 
 ## Rules
@@ -40,16 +41,17 @@ aember-cli/                              `aember` CLI: sdk, build, pack, install
   Format changes go into both repos together.
 - The socket directory comes from the LXC pre-start hook + bind mount in
   `aember-container.json`, the same as aember-stats' (read-only here).
-- The CLI is shared with aember-stats (stdlib Python, run through
-  `aember-cli/run.py`, never pip-installed); `aember/project.py` holds the
-  differences (`NAME`, `TESTS = "sdk"`).
+- The CLI is shared with aember-stats, aember-auth and aember-fleet: it
+  lives in the aember-build-helper submodule (`project-cli/`, stdlib
+  Python, never pip-installed); `aember-cli/run.py` holds the differences
+  (`NAME`, `RESOURCES_VERSION`, `TESTS = "sdk"`). Change the CLI there.
 - WSL crashes on full-core builds: the CLI uses 2/3 of the CPUs.
 
 ## Builds and tests
 
 - Cross builds source the SDK's environment-setup and use its
   `OEToolchainConfig.cmake` (meta-qt6 adds Qt's host tools there).
-- `aember-cli/run.py test`: CLI tests, then the Qt tests built with the x64
+- `aember-cli/run.py test`: the Qt tests built with the x64
   SDK and run through the SDK's loader (`QT_QPA_PLATFORM=offscreen`, the
   sysroot's plugins).
 - Before calling a change done: `run.py test`, a cross build + pack, and the
