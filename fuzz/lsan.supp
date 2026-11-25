@@ -1,0 +1,3 @@
+# Font fallback patterns fontconfig keeps for the process (Ubuntu's Qt
+# caches them): not ours, and bounded.
+leak:libfontconfig

@@ -19,6 +19,7 @@ include/aember-monitor/dashboard.h       Paint(): one frame, pure (QPainter)
 include/aember-monitor/monitor-window.h  QRasterWindow + QLocalSocket client
 src/main.cpp                             platform (linuxfb/offscreen), font dir, flags
 tests/test_monitor.cpp                   Qt Test: parser, drawing, socket client
+fuzz/                                    libFuzzer target (host clang, Ubuntu's Qt)
 assets/fonts/                            DejaVu Sans (the only font) + its license
 aember-container.json                    container manifest (aember-build-helper)
 aember-cli/run.py                        `aember` CLI: sdk, build, pack, install, test, all
@@ -58,6 +59,12 @@ aember-cli/run.py                        `aember` CLI: sdk, build, pack, install
   container in aember with aember-stats (QEMU boot; `--screenshot` shows the
   frame).
 - C++23, `-Werror`, clang-format; Python black, 88 columns.
+- Fuzzing: `fuzz/run.sh [SECONDS]` (CI: 60 s, the `fuzz` job) feeds any
+  line to `ParseSample()` and draws a frame of what parsed (`fuzz_sample`).
+  It builds with clang 18 against Ubuntu's Qt 6 (`qt6-base-dev`), not the
+  SDK. `fuzz/lsan.supp` hides fontconfig's font cache, which isn't ours. A
+  crash gets a fix, a `Regression:` test and its input in
+  `fuzz/corpus/sample/`.
 - A test that pins down a fixed bug starts with a comment
   `Regression: <the bug>` (`grep -rn "Regression:"` lists them). Every bug
   fix gets one.
