@@ -63,6 +63,13 @@ The unit tests are built with the x64 SDK and run on the host through the
 SDK's loader with Qt's offscreen platform. They cover the parser, the
 drawing at three screen sizes, and the socket client including reconnects.
 
+## Fuzzing
+
+`fuzz/fuzz_sample` feeds any line to the parser and draws a frame of what
+it parsed (libFuzzer, ASan + UBSan). On Ubuntu 24.04, with `clang-18 llvm-18
+libclang-rt-18-dev cmake ninja-build qt6-base-dev` installed: `fuzz/run.sh`
+(60 s, as CI does); crashing inputs land in `build/fuzz/crashes/sample/`.
+
 ## License
 
 See [LICENSE](LICENSE). DejaVu Sans: see `assets/fonts/LICENSE-DejaVu.txt`.
