@@ -120,6 +120,9 @@ class MonitorTest : public QObject {
     }
   }
 
+  // Regression (found by `run.py test --sanitize`): the window went away
+  // with a connected socket, whose destructor signalled into an already
+  // destroyed timer.
   void readsLinesFromTheSocketAndSavesAScreenshot() {
     QTemporaryDir dir;
     QVERIFY(dir.isValid());

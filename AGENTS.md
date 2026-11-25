@@ -58,6 +58,9 @@ aember-cli/run.py                        `aember` CLI: sdk, build, pack, install
   container in aember with aember-stats (QEMU boot; `--screenshot` shows the
   frame).
 - C++23, `-Werror`, clang-format; Python black, 88 columns.
+- A test that pins down a fixed bug starts with a comment
+  `Regression: <the bug>` (`grep -rn "Regression:"` lists them). Every bug
+  fix gets one.
 
 ## Working agreements
 
