@@ -1,0 +1,45 @@
+# Mutation testing of the C++ unit tests (`aember-cli/run.py mutate`, the
+# shared mutator from aember-build-helper), weekly and by hand: too slow for
+# every pull request. The summary lists the score and every survivor (a line
+# no test checks: write a test, or judge it equivalent). Scores: AGENTS.md.
+name: Mutation
+
+on:
+  schedule:
+    - cron: "23 4 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutate:
+    name: Mutation (x64 SDK)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: SDK version
+        id: sdk
+        run: echo "version=$(sed -n 's/^RESOURCES_VERSION = "\(.*\)"/\1/p' aember-cli/run.py)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: build/aember-resources/x64-poky-linux/sdk
+          key: aember-sdk-x64-poky-linux-v${{ steps.sdk.outputs.version }}
+      - name: SDK
+        run: python3 aember-cli/run.py sdk -a x64-poky-linux
+      - name: Mutate
+        run: python3 aember-cli/run.py mutate
+      - name: Summary
+        if: always()
+        run: cat build/mutation/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation
+          path: build/mutation/
+          if-no-files-found: ignore

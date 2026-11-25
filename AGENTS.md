@@ -59,6 +59,13 @@ aember-cli/run.py                        `aember` CLI: sdk, build, pack, install
   container in aember with aember-stats (QEMU boot; `--screenshot` shows the
   frame).
 - C++23, `-Werror`, clang-format; Python black, 88 columns.
+- Mutation testing: `aember-cli/run.py mutate [-n N] [-f FILE]` (the shared
+  mutator from aember-build-helper: one operator flipped at a time in
+  `src/*.cpp` except main.cpp, the unit tests rebuilt and run; report in
+  `build/mutation/`). Weekly in CI (`.github/workflows/mutation.yml`).
+  Score 2026-11-25: 40.4% -> 42.1% (57 mutants). Most survivors are
+  painting code (colours, fonts, layout) that no unit test looks at: the
+  screenshots and the QEMU demo are its check.
 - Fuzzing: `fuzz/run.sh [SECONDS]` (CI: 60 s, the `fuzz` job) feeds any
   line to `ParseSample()` and draws a frame of what parsed (`fuzz_sample`).
   It builds with clang 18 against Ubuntu's Qt 6 (`qt6-base-dev`), not the
