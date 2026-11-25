@@ -90,6 +90,9 @@ class MonitorTest : public QObject {
     QCOMPARE(FormatUptime(93784), QStringLiteral("1d 2h"));
     QCOMPARE(FormatUptime(7500), QStringLiteral("2h 05m"));
     QCOMPARE(FormatUptime(249), QStringLiteral("4m 09s"));
+    // The largest unit stays the largest: 5 TiB/s is 5120 GB/s.
+    QCOMPARE(FormatRate(5LL << 40), QStringLiteral("5120.0 GB/s"));
+    QCOMPARE(FormatKb(3LL << 40), QStringLiteral("3072.0 TB"));
   }
 
   void drawsTheWaitingScreenAndTheDashboard() {
