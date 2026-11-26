@@ -52,7 +52,7 @@ In the dev container (`.devcontainer/`, aember's dev image):
 git submodule update --init                     # tools/aember-build-helper
 aember-cli/run.py sdk   -a aarch64-poky-linux   # aember-resources SDK (v0.1.13+, with Qt)
 aember-cli/run.py build -a aarch64-poky-linux   # → build/stage/<arch>/
-aember-cli/run.py pack  -a aarch64-poky-linux   # → build/aember-out/<arch>/aember-monitor/
+aember-cli/run.py pack  -a aarch64-poky-linux   # → build/aember-out/<arch>/aember-monitor/aember-monitor.aember
 aember-cli/run.py install -a aarch64-poky-linux ../aember   # into aember's overlay
 aember-cli/run.py test                          # unit tests (x64 SDK)
 ```
